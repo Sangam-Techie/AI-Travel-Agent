@@ -96,7 +96,7 @@ async def test_tool_calling():
         "type": "function",
         "function":{
             "name": "get_weather",
-            "desscription": "Get weather for a city",
+            "description": "Get weather for a city",
             "parameters": {
                 "type": "object",
                 "properties": {
