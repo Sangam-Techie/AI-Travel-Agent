@@ -5,9 +5,20 @@ import uuid
 from contextlib import asynccontextmanager
 
 
-from src.api.models import ChatRequest, ChatResponse, HealthResponse
+from src.api.models import ChatRequest, ChatResponse, HealthResponse, ConversationHistory
 from src.agents.travel_agent import create_travel_agent
 from src.agents.base_agent import AgentLoop
+import logging
+from datetime import datetime
+
+
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
 
@@ -30,12 +41,13 @@ async def lifespan(app: FastAPI):
     print(" Shutting down Travel Agent API...")
     sessions.clear()
 
-
+from src.api.config import settings
 #Create FastAPI app
 app = FastAPI(
-    title= "AI Travel Agent API",
+    title= settings.app_name,
     description="An intelligent travel assistant powered by LLMs and real-time APIs",
-    version="1.0.0",
+    version=settings.app_version,
+    debug=settings.debug,
     lifespan=lifespan
 )
 
@@ -90,15 +102,22 @@ async def chat(request: ChatRequest):
 
     The agent maintains conversation history within a session.
     """
-    try:
-        # Generate session ID if not provided
-        session_id = request.session_id or str(uuid.uuid4())
+    # Generate session ID if not provided
+    session_id = request.session_id or str(uuid.uuid4())
 
+    logger.info(f"Chat request - Session: {session_id}, Message length: {len(request.message)}")
+
+    try:
+        
         # Get or create agent for this session
         agent = get_or_create_agent(session_id)
 
+        start_time = datetime.now()
         # Run the agent
         response = await agent.run(request.message)
+        duration = (datetime.now() - start_time).total_seconds()
+
+        logger.info(f"Response generated - Session: {session_id}, Duration: {duration:.2f}s")
 
         return ChatResponse(
             response=response,
@@ -106,7 +125,7 @@ async def chat(request: ChatRequest):
         )
     except Exception as e:
         # Log the error
-        print(f"Error in chat endpoint: {str(e)}")
+        logger.error(f"Error in chat - Session: {session_id}, Error: {str(e)}", exc_info=True)
 
         raise HTTPException(
             status_code=500,
@@ -160,3 +179,26 @@ async def list_sessions():
         "active_sessions": len(sessions),
         "session_ids": list(sessions.keys())
     }
+
+@app.get("/history/{session_id}", response_model=ConversationHistory)
+async def get_conversation_history(session_id: str):
+    """
+    Get the full conversation history for a session.
+
+    This allows users to review what they've discussed with the agent.
+    """
+    if session_id not in sessions:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Session {session_id} not found"
+        )
+
+    agent = sessions[session_id]
+    messages = agent.get_conversation_history()
+
+    return ConversationHistory(
+        session_id=session_id,
+        messages=messages,
+        message_count=len(messages)
+    )
+

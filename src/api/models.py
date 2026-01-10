@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Dict
+from typing import List, Dict, Any
 
 
 
@@ -36,3 +36,36 @@ class HealthResponse(BaseModel):
     status: str
     message: str
     version: str
+
+
+class Message(BaseModel):
+    """A single message in a conversation."""
+    role: str = Field(..., description="Message role: system, user, assistant, or tool")
+    content: str|None = Field(None, description="Message content")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "role": "user",
+                "content": "Find flights to paris"
+            }
+        }
+
+    
+class ConversationHistory(BaseModel):
+    """Full conversation history for a session."""
+    session_id: str
+    messages: List[Dict[str, Any]]
+    message_count: int
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "session_id": "abc123",
+                "messages": [
+                    {"role": "user", "content": "Hello"},
+                    {"role": "assistant", "content": "Hi! How can I help?"}
+                ],
+                "message_count": 2
+            }
+        }
