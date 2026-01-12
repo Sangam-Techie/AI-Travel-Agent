@@ -10,6 +10,7 @@ from src.agents.travel_agent import create_travel_agent
 from src.agents.base_agent import AgentLoop
 import logging
 from datetime import datetime
+from fastapi.responses import RedirectResponse
 
 
 
@@ -78,6 +79,11 @@ def get_or_create_agent(session_id: str) -> AgentLoop:
     if session_id not in sessions:
         sessions[session_id] = create_travel_agent()
     return sessions[session_id]
+
+
+@app.get("/", include_in_schema=False)
+async def docs_redirect():
+    return RedirectResponse(url="/docs")
 
 
 
