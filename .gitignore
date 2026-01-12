@@ -6,6 +6,12 @@ __pycache__/
 venv/
 ENV/
 
+# Build artifacts
+dist/
+build/
+*.egg-info/
+.eggs/
+
 # Environment variables
 .env
 .env.local

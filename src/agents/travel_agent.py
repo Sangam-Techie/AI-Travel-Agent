@@ -108,8 +108,8 @@ async def test_real_agent():
     query = input("What would you like to do? ")
     response = await agent.run(query)
     print(f"\nRESPONSE:\n{response}\n")
-    with open("response.txt", "w") as f:
-        f.write(response)
+    # with open("response.txt", "w") as f:
+    #     f.write(response)
 
     #Reset for next query
     agent.reset()

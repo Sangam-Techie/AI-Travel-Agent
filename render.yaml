@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: travel-agent-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn src.api.server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: AMADEUS_API_KEY
+        sync: false
+      - key: AMADEUS_API_SECRET
+        sync: false
+      - key: OPENWEATHER_API_KEY
+        sync: false
