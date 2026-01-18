@@ -11,6 +11,7 @@ from src.agents.base_agent import AgentLoop
 import logging
 from datetime import datetime
 from fastapi.responses import RedirectResponse
+import markdown
 
 
 
@@ -127,7 +128,7 @@ async def chat(request: ChatRequest):
 
         return ChatResponse(
             response=response,
-            session_id=session_id
+            session_id=session_id,
         )
     except Exception as e:
         # Log the error
