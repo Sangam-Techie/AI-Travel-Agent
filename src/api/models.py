@@ -21,7 +21,6 @@ class ChatResponse(BaseModel):
     """Response model for chat endpoint."""
     response: str = Field(..., description="Agent's response")
     session_id: str = Field(..., description="Session ID for this conversation")
-    format: str = Field(default="markdown", description="Format of the response content")
 
     class Config:
         json_schema_extra = {
