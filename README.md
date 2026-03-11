@@ -43,7 +43,7 @@ User Request → FastAPI Server → Agent Loop → LLM (Groq)
 
 1. **Clone the repository:**
 ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/Sangam-Techie/AI-Travel-Agent.git
    cd travel-agent-tutorial
 ```
 
@@ -156,7 +156,7 @@ This project demonstrates:
 
 ## 🎯 What's Next? (Phase 2)
 
-In Phase 2, we'll extend this to a **multi-agent system**:
+In Phase 2, this will be extended to a **multi-agent system**:
 - Coordinator Agent (routes requests)
 - Specialized Agents (flights, weather, budgets)
 - Agent-to-agent communication
