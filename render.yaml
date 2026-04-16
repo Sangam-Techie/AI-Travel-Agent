@@ -13,3 +13,15 @@ services:
         sync: false
       - key: OPENWEATHER_API_KEY
         sync: false
+
+# The Streamlit Frontend
+  - type: web
+    name: travel-agent-ui
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          name: travel-agent-api
+          type: web

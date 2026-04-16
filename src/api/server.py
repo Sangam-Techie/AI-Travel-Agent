@@ -11,7 +11,7 @@ from src.agents.base_agent import AgentLoop
 import logging
 from datetime import datetime
 from fastapi.responses import RedirectResponse
-import markdown
+
 
 
 
@@ -209,3 +209,14 @@ async def get_conversation_history(session_id: str):
         message_count=len(messages)
     )
 
+@app.get("/traces/{session_id}")
+async def get_traces(session_id: str):
+    """
+    OBSERVABILITY ENDPOINT: Returns the raw traces of the agent's logic.
+    This is a huge 'Hire Me' feature.
+    """
+    if session_id not in sessions:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    agent = sessions[session_id]
+    return {"traces": agent.get_traces()}

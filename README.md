@@ -1,4 +1,4 @@
-# AI Travel Agent - Phase 1
+# AI Travel Agent
 
 A production-ready travel assistant powered by large language models with real-time flight and weather data integration.
 
@@ -143,7 +143,7 @@ travel-agent-tutorial/
 └── README.md
 ```
 
-## 🔑 Key Learnings (Phase 1)
+## 🔑 Key Learnings
 
 This project demonstrates:
 
@@ -153,14 +153,6 @@ This project demonstrates:
 4. **State Management**: Maintaining conversation context across requests
 5. **API Design**: Building a clean RESTful API with FastAPI
 6. **Real-world Integration**: Working with actual third-party APIs
-
-## 🎯 What's Next? (Phase 2)
-
-In Phase 2, this will be extended to a **multi-agent system**:
-- Coordinator Agent (routes requests)
-- Specialized Agents (flights, weather, budgets)
-- Agent-to-agent communication
-- More sophisticated state management
 
 ## 🐛 Troubleshooting
 

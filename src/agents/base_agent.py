@@ -1,6 +1,7 @@
 from typing import List, Dict, Any, Callable
 from src.llm_client import LLMClient
 import json
+import time
 
 class AgentLoop:
     """
@@ -31,6 +32,9 @@ class AgentLoop:
             {"role": "system", "content": system_prompt}
         ]
 
+        # New: Store traces for debugging/hiring demo
+        self.traces = []
+
     async def run(self, user_message: str, max_iterations: int = 5) -> str:
         """
         Run the agent loop for a user message.
@@ -56,6 +60,15 @@ class AgentLoop:
 
             # Extract the assistant's message
             assistant_message = response["choices"][0]["message"]
+
+            # Log the "thought" for observability
+            self.traces.append({
+                "iteration": iteration,
+                "role": "assistant",
+                "content": assistant_message.get("content"),
+                "tool_calls": assistant_message.get("tool_calls"),
+                "timestamp": time.time()
+            })
 
             # Check if LLM wants to call tools
             tool_calls = assistant_message.get("tool_calls")
@@ -95,6 +108,7 @@ class AgentLoop:
         tool_name = tool_call["function"]["name"]
         tool_args_str = tool_call["function"]["arguments"]
         tool_id = tool_call["id"]
+        self.traces.append({"event": "tool_start", "tool id": tool_id, "tool": tool_name, "args": tool_args_str})
 
         print(f" Calling tool: {tool_name}")
         print(f" Arguments: {tool_args_str}")
@@ -123,6 +137,9 @@ class AgentLoop:
             self.messages.append({"role": "tool", "tool_call_id": tool_id, "name": tool_name, "content": json.dumps({"error": error_msg})})
 
     
+    def get_traces(self):
+        return self.traces
+
     def get_conversation_history(self) -> List[Dict]:
         """Get the full conversation history."""
         return self.messages.copy()
@@ -130,3 +147,4 @@ class AgentLoop:
     def reset(self) -> None:
         """Reset converstion to initail state."""
         self.messages = [{"role": "system", "content": self.system_prompt}]
+        self.traces = []
