@@ -35,7 +35,7 @@ class AgentLoop:
         # New: Store traces for debugging/hiring demo
         self.traces = []
 
-    async def run(self, user_message: str, max_iterations: int = 5) -> str:
+    async def run(self, user_message: str, max_iterations: int = 10) -> str:
         """
         Run the agent loop for a user message.
 
