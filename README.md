@@ -92,10 +92,6 @@ User Request → FastAPI Server → Agent Loop → LLM (Groq)
    python src/main.py
 ```
 
-6. **Test it out:**
-   - API Documentation: http://localhost:8000/docs
-   - Health Check: http://localhost:8000/health
-
 ## 📖 API Usage
 
 ### Chat Endpoint
@@ -138,27 +134,48 @@ python src/llm_client.py          # Test LLM connection
 python src/tools/travel_tools.py  # Test API integrations
 python src/agents/travel_agent.py # Test complete agent
 ```
+### Docker Deployment
+- command: docker-compose up build
+- access at: http://localhost:8501
 
 ## 📁 Project Structure
 ```
-travel-agent-tutorial/
-├── src/
-│   ├── agents/
-│   │   ├── base_agent.py      # Core agent loop
-│   │   └── travel_agent.py    # Travel-specific agent
-│   ├── tools/
-│   │   └── travel_tools.py    # API integrations
-│   ├── api/
-│   │   ├── server.py          # FastAPI application
-│   │   ├── models.py          # Request/response models
-│   │   └── config.py          # Configuration
-│   ├── llm_client.py          # LLM client wrapper
-│   └── main.py                # Entry point
-├── tests/
-│   └── test_api.py            # API tests
-├── .env                       # Environment variables (not in git)
-├── .gitignore
-└── README.md
+. 📂 AI-Travel-Agent
+├── 📄 Dockerfile
+├── 📄 LICENSE
+├── 📄 README.md
+├── 📄 app.py
+├── 📄 docker-compose.yml
+├── 📄 pyproject.toml
+├── 📄 render.yaml
+├── 📄 requirements.txt
+└── 📂 src/
+│  ├── 📄 __init__.py
+│  └── 📂 __pycache__/
+│  └── 📂 agents/
+│    ├── 📄 __init__.py
+│    └── 📂 __pycache__/
+│    ├── 📄 base_agent.py
+│    ├── 📄 test_agent.py
+│    ├── 📄 travel_agent.py
+│  └── 📂 api/
+│    ├── 📄 __init__.py
+│    └── 📂 __pycache__/
+│    ├── 📄 config.py
+│    ├── 📄 models.py
+│    ├── 📄 server.py
+│  ├── 📄 llm_client.py
+│  ├── 📄 main.py
+│  ├── 📄 practice_async.py
+│  ├── 📄 test_setup.py
+│  └── 📂 tools/
+│    ├── 📄 __init__.py
+│    └── 📂 __pycache__/
+│    ├── 📄 travel_tools.py
+└── 📂 tests/
+│  ├── 📄 __init__.py
+│  ├── 📄 test_api.py
+└── 📄 uv.lock
 ```
 
 ## 🔑 Key Learnings

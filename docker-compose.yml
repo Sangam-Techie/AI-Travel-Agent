@@ -1,14 +1,28 @@
-# docker-compose.yml
-
 services:
+  # --- BACKEND SERVICE ---
   api:
     build: .
     ports:
       - "8000:8000"
-    environment:
-      - PYTHONPATH=/app
     env_file:
       - .env
     volumes:
       - .:/app:z
     command: uvicorn src.api.server:app --host 0.0.0.0 --port 8000 --reload
+
+  # --- FRONTEND SERVICE ---
+  frontend:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      # Use the service name 'api' so Streamlit knows where to send requests
+      - BACKEND_URL=http://api:8000
+    env_file:
+      - .env
+    volumes:
+      - .:/app:z
+    # Run streamlit on 0.0.0.0 to make it accessible outside the container
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+    depends_on:
+      - api
