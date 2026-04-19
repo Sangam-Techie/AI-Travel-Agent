@@ -1,7 +1,7 @@
 from typing import List, Dict, Any, Callable
 from src.llm_client import LLMClient
 import json
-import time
+from datetime import datetime
 
 class AgentLoop:
     """
@@ -61,13 +61,15 @@ class AgentLoop:
             # Extract the assistant's message
             assistant_message = response["choices"][0]["message"]
 
+            now = datetime.now()
+
             # Log the "thought" for observability
             self.traces.append({
                 "iteration": iteration,
                 "role": "assistant",
                 "content": assistant_message.get("content"),
                 "tool_calls": assistant_message.get("tool_calls"),
-                "timestamp": time.time()
+                "timestamp": f"{now:%Y-%m-%d %H:%M:%S}"
             })
 
             # Check if LLM wants to call tools

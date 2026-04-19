@@ -28,9 +28,9 @@ with st.sidebar:
     st.divider()
     st.markdown("""
     **Example Queries:**
-    - "Find flights from NYC to PAR for next week"
+    - "Find me flights from London to Paris for tomorrow."
     - "What's the weather in Tokyo?"
-    - "I'm in London, show me flights to Berlin and check the weather there."
+    - "I'm in London, show me flights to Berlin this week and check the weather there."
     """)
 
 col1, col2 = st.columns([2, 1])

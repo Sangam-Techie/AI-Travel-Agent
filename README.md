@@ -2,6 +2,14 @@
 
 A production-ready travel assistant powered by large language models with real-time flight and weather data integration.
 
+🌐 Live Demo
+
+- Frontend (Streamlit): https://ai-travel-agent-frontend-ym7d.onrender.com
+
+- API Documentation (FastAPI): https://ai-travel-agent-zp3u.onrender.com
+
+
+
 ## 🌟 Features
 
 - **Intelligent Agent Loop**: Custom-built agent that decides when to call tools vs respond directly
@@ -10,6 +18,16 @@ A production-ready travel assistant powered by large language models with real-t
 - **RESTful API**: FastAPI-powered web service with automatic documentation
 - **Session Management**: Maintains conversation context across multiple requests
 - **Async Architecture**: Non-blocking operations for optimal performance
+- **Frontend**: Streamlit for high-performance AI prototyping.
+- **Observability**: Custom JSON Tracing for monitoring agent "thought" iterations.
+
+🕵️ Observability & Tracing
+
+- Unlike standard chatbots, this agent features a Developer Mode. It exposes the "Inner Monologue" of the LLM, showing exactly when a tool is called, the   arguments passed, and the latency of each step. This is critical for debugging complex agentic workflows.
+
+🚀 Deployment
+
+- Deployed using a Two-Tier Architecture on Render. The frontend and backend are decoupled, communicating via secure REST endpoints with CORS protection.
 
 ## 🏗️ Architecture
 ```
