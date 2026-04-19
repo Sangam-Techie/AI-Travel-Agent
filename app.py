@@ -3,7 +3,7 @@
 import streamlit as st
 import requests
 import os
-import json
+import uuid
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
@@ -13,7 +13,6 @@ st.set_page_config(page_title="Travel Agent Pro", layout="wide")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "session_id" not in st.session_state:
-    import uuid
     st.session_state.session_id = str(uuid.uuid4())
 
 # Sidebar with "Developer Mode"
@@ -22,8 +21,15 @@ with st.sidebar:
     dev_mode = st.toggle("Enable Developer Tracing", value=True)
     st.info("Tracing shows the 'Inner Monologue' of the AI Agent.")
     
-    if st.button("Clear Cache"):
+    if st.button("Clear Cache", use_container_width=True):
+        try:
+            requests.delete(f"{BACKEND_URL}/session/{st.session_state.session_id}", timeout=5)
+        except Exception as e:
+            # Silently fail if backend is unreachable; we still clear local state
+            pass
         st.session_state.messages = []
+        # This ensures the 'traces' fetcher below won't find old data
+        st.session_state.session_id = str(uuid.uuid4())
         st.rerun()
     st.divider()
     st.markdown("""
