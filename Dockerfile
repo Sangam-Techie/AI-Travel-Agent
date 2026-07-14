@@ -16,5 +16,10 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy apllication
+# Copy application
 COPY . .
+
+# Default: run the API. docker-compose.yml overrides this per-service
+# (api vs. streamlit frontend), but this makes a standalone
+# `docker build -t travel-agent . && docker run -p 8000:8000 travel-agent` work too.
+CMD ["uvicorn", "src.api.server:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -4,9 +4,9 @@ A production-ready travel assistant powered by large language models with real-t
 
 🌐 Live Demo
 
-- Frontend (Streamlit): https://ai-travel-agent-frontend-ym7d.onrender.com
+- Frontend : https://ai-travel-agent-zp3u.onrender.com
 
-- API Documentation (FastAPI): https://ai-travel-agent-zp3u.onrender.com
+- API Documentation (FastAPI): https://ai-travel-agent-zp3u.onrender.com/docs
 
 
 
@@ -74,11 +74,14 @@ User Request → FastAPI Server → Agent Loop → LLM (Groq)
    # Or using standard venv
    python -m venv .venv
    source .venv/bin/activate
+
+   # The Fastest Option
+   Use: uv sync
 ```
 
 3. **Install dependencies:**
 ```bash
-   uv pip install fastapi uvicorn httpx python-dotenv pydantic pydantic-settings
+   uv add fastapi uvicorn httpx python-dotenv pydantic pydantic-settings
 ```
 
 4. **Set up environment variables:**
@@ -89,7 +92,7 @@ User Request → FastAPI Server → Agent Loop → LLM (Groq)
 
 5. **Run the server:**
 ```bash
-   python src/main.py
+   python src/main.py or uv run src/main.py
 ```
 
 ## 📖 API Usage
@@ -127,12 +130,12 @@ curl -X POST http://localhost:8000/reset/user123
 ## 🧪 Testing
 ```bash
 # Run API tests
-python tests/test_api.py
+uv run tests/test_api.py
 
 # Test individual components
-python src/llm_client.py          # Test LLM connection
-python src/tools/travel_tools.py  # Test API integrations
-python src/agents/travel_agent.py # Test complete agent
+uv run src/llm_client.py         # Test LLM connection
+uv run src/tools/travel_tools.py  # Test API integrations
+uv run src/agents/travel_agent.py # Test complete agent
 ```
 ### Docker Deployment
 - command: docker-compose up build
@@ -148,29 +151,23 @@ python src/agents/travel_agent.py # Test complete agent
 ├── 📄 docker-compose.yml
 ├── 📄 pyproject.toml
 ├── 📄 render.yaml
-├── 📄 requirements.txt
 └── 📂 src/
 │  ├── 📄 __init__.py
-│  └── 📂 __pycache__/
 │  └── 📂 agents/
 │    ├── 📄 __init__.py
-│    └── 📂 __pycache__/
 │    ├── 📄 base_agent.py
 │    ├── 📄 test_agent.py
 │    ├── 📄 travel_agent.py
 │  └── 📂 api/
 │    ├── 📄 __init__.py
-│    └── 📂 __pycache__/
 │    ├── 📄 config.py
 │    ├── 📄 models.py
 │    ├── 📄 server.py
 │  ├── 📄 llm_client.py
 │  ├── 📄 main.py
-│  ├── 📄 practice_async.py
 │  ├── 📄 test_setup.py
 │  └── 📂 tools/
-│    ├── 📄 __init__.py
-│    └── 📂 __pycache__/
+│    ├── 📄 __init__.py   
 │    ├── 📄 travel_tools.py
 └── 📂 tests/
 │  ├── 📄 __init__.py

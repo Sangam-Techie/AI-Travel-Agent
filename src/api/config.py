@@ -1,8 +1,9 @@
-from pydantic_settings import BaseSettings  
+from pydantic_settings import BaseSettings
+from typing import List
+
 
 class Settings(BaseSettings):
     """
-
     Application settings loaded from environment variables.
 
     These can be set in .env file or as environment variables.
@@ -25,10 +26,16 @@ class Settings(BaseSettings):
     # Agent Settings
     max_agent_iterations: int = 5
     agent_temperature: float = 0.7
+    llm_max_tokens: int = 1500
 
     # Session Settings
     max_active_sessions: int = 100
     session_timeout_minutes: int = 60
+    session_cleanup_interval_minutes: int = 10
+
+    # CORS - restrict this in production via the ALLOWED_ORIGINS env var,
+    # e.g. ALLOWED_ORIGINS=["https://your-frontend.onrender.com"]
+    allowed_origins: List[str]
 
     class Config:
         env_file = ".env"

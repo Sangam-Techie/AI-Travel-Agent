@@ -1,7 +1,8 @@
 import os
+import asyncio
 import httpx
 from dotenv import load_dotenv
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Optional
 
 load_dotenv()
 
@@ -14,40 +15,68 @@ class LLMClient:
             raise ValueError("GROQ_API_KEY not found in environment variables")
 
         self.base_url = "https://api.groq.com/openai/v1"
-        self.model = "openai/gpt-oss-120b"
-    async def chat(self, messages: List[Dict[str, str]], temperature: float = 0.7) -> str:
+        self.model = "llama-3.3-70b-versatile"
+
+    async def _post_with_retry(self, payload: Dict, retries: int = 2) -> Dict:
+        """POST to the chat completions endpoint with backoff on 429/5xx."""
+        last_response = None
+        for attempt in range(retries + 1):
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.base_url}/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json=payload,
+                    timeout=30.0
+                )
+
+            if response.status_code == 200:
+                return response.json()
+
+            last_response = response
+            if (response.status_code == 429 or response.status_code >= 500) and attempt < retries:
+                await asyncio.sleep(1.5 * (attempt + 1))
+                continue
+
+            print(f"API Error {response.status_code}: {response.text}")
+            response.raise_for_status()
+
+        # Should be unreachable, but keeps control flow explicit
+        last_response.raise_for_status()
+
+    async def chat(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.7,
+        max_tokens: int = 1500,
+    ) -> str:
         """Send messages to LLM and get response.
 
         Args:
-            messages: List if message dicts with 'role' and 'content'
+            messages: List of message dicts with 'role' and 'content'
             temperature: Creativity (0.0 = focused, 2.0 = creative)
+            max_tokens: Cap on generated tokens
 
         Returns:
             The assistant's response text
         """
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                f"{self.base_url}/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {self.api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": self.model,
-                    "messages": messages,
-                    "temperature": temperature,
-                },
-                timeout=30.0
-            )
+        data = await self._post_with_retry({
+            "model": self.model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        })
+        return data["choices"][0]["message"]["content"]
 
-            if response.status_code != 200:
-                error_detail = response.text
-                print(f"API Error {response.status_code}: {error_detail}")
-                response.raise_for_status()
-            data = response.json()
-            return data["choices"][0]["message"]["content"]
-    
-    async def chat_with_tools(self, messages: List[Dict[str, str]], tools: List[Dict]|None = None, temperature: float = 0.7) -> Dict[str, Any]:
+    async def chat_with_tools(
+        self,
+        messages: List[Dict[str, str]],
+        tools: Optional[List[Dict]] = None,
+        temperature: float = 0.7,
+        max_tokens: int = 1500,
+    ) -> Dict[str, Any]:
         """
         Send messages with tool definitions to LLM.
 
@@ -55,37 +84,23 @@ class LLMClient:
             messages: Conversation history
             tools: Available tool definitions
             temperature: Creativity level
-        
+            max_tokens: Cap on generated tokens
+
         Returns:
             Full response including tool calls if any
         """
         request_body = {
             "model": self.model,
             "messages": messages,
-            "temperature": temperature
+            "temperature": temperature,
+            "max_tokens": max_tokens,
         }
 
         if tools:
             request_body["tools"] = tools
             request_body["tool_choice"] = "auto"
-        
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                f"{self.base_url}/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {self.api_key}",
-                    "Content-Type": "application/json",
-                },
-                json=request_body,
-                timeout=30.0
-            )
 
-            if response.status_code != 200:
-                error_detail = response.text
-                print(f"API Error {response.status_code}: {error_detail}")
-                response.raise_for_status()
-            
-            return response.json()
+        return await self._post_with_retry(request_body)
 
 
 async def test_tool_calling():
@@ -160,4 +175,3 @@ if __name__ == "__main__":
     import asyncio
     # asyncio.run(test_llm())
     asyncio.run(test_tool_calling())
-

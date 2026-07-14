@@ -2,8 +2,10 @@ services:
   - type: web
     name: travel-agent-api
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn src.api.server:app --host 0.0.0.0 --port $PORT
+    # Installs uv, loads it into the path, and syncs dependencies exactly from uv.lock
+    buildCommand: curl -LsSf https://astral.sh/uv/install.sh | sh && source $HOME/.local/bin/env && uv sync --frozen
+    # Prefixed with 'uv run' to execute within the uv environment
+    startCommand: uv run uvicorn src.api.server:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: GROQ_API_KEY
         sync: false
@@ -13,15 +15,5 @@ services:
         sync: false
       - key: OPENWEATHER_API_KEY
         sync: false
-
-# The Streamlit Frontend
-  - type: web
-    name: travel-agent-ui
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
-    envVars:
-      - key: BACKEND_URL
-        fromService:
-          name: travel-agent-api
-          type: web
+      - key: ALLOWED_ORIGINS
+        sync: false
