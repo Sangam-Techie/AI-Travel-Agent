@@ -438,8 +438,7 @@
 (function () {
   "use strict";
 
-  var qs = new URLSearchParams(location.search);
-  var API_BASE = qs.get("api") || location.origin;
+  var API_BASE = location.origin;
   function apiUrl(path) { return API_BASE + path; }
 
   function uuid() {
